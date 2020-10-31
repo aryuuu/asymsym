@@ -1,7 +1,7 @@
 from Crypto.Util import number
 from random import randint
 from types import SimpleNamespace
-import math, json
+import math, json, time
 
 class PubKey(object):
     def __init__(self, n, e):

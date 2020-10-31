@@ -1,6 +1,6 @@
 from Crypto.Util import number
 from random import randint
-import math
+import math, time
 
 class PubKey(object):
     def __init__(self, y=None, g=None, p=None):
