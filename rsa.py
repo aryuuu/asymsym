@@ -1,7 +1,7 @@
 from Crypto.Util import number
-from random import randint
 from types import SimpleNamespace
-import math, json, time
+from datetime import datetime as dt
+import json
 
 class PubKey(object):
     def __init__(self, n, e):
@@ -52,16 +52,24 @@ def gen_key_pair():
     return pub_key, priv_key
 
 def rsa_encrypt(plaintext, pub_key):
+    start = dt.now()
+
     m = str_to_int(plaintext)
     c = pow(m, pub_key.e, pub_key.n)
-    return c
+
+    end = dt.now()
+    return c, (end - start).microseconds
 
 def rsa_decrypt(ciphertext, priv_key):
+    start = dt.now()
+
     m = pow(ciphertext, priv_key.d, priv_key.n)
     string = int_to_str(m)
-    return string
-    # for i in string:
-    #     print(hex(ord(i)))
+
+    end = dt.now()
+
+    return string, (end - start).microseconds, len(string)
+
 
 if __name__ == "__main__":
     while(1):
@@ -102,12 +110,14 @@ if __name__ == "__main__":
             with open(message_file, 'r') as mf:
                 message = mf.read()
             
-            ciphertext = rsa_encrypt(message, pub_key)
+            ciphertext, elapsed_time= rsa_encrypt(message, pub_key)
 
             with open(message_file + '.enc', 'w') as encf:
                 encf.write(str(ciphertext))
 
             print("Message encrypted")
+            print("Time elapsed %s" % elapsed_time)
+            print("Ciphertext size %s bytes" % len(str(ciphertext)))
 
         elif (choice == "3"):
             priv_key = input("Private key file >> ")
@@ -122,13 +132,14 @@ if __name__ == "__main__":
             with open(ciphertext_file, 'r') as cf:
                 ciphertext = cf.read()
             
-            message = rsa_decrypt(int(ciphertext), priv_key)
+            message, time_elapsed, size = rsa_decrypt(int(ciphertext), priv_key)
 
             with open(ciphertext_file + '.dec', 'w') as mf:
                 mf.write(message)
 
             print("Message decrypted")
-
+            print("Time elapsed %s" % time_elapsed)
+            print("Message size %s" % size)
 
         elif (choice == "4"):
             break
